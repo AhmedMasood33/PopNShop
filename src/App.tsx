@@ -14,6 +14,10 @@ import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
 import { WishlistProvider } from './contexts/WishlistContext';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
+import MyProductsPage from './pages/MyProductsPage';
+import PaymentPage from './pages/PaymentPage';
+
+
 
 function App() {
   return (
@@ -30,6 +34,8 @@ function App() {
                 <Route path="register" element={<RegisterPage />} />
                 <Route path="cart" element={<CartPage />} />
                 <Route path="wishlist" element={<WishlistPage />} />
+                <Route path="my-products" element={<MyProductsPage />} />
+                <Route path="payment" element={<PaymentPage />} />
                 <Route 
                   path="sell" 
                   element={
@@ -41,9 +47,9 @@ function App() {
                 <Route 
                   path="profile" 
                   element={
-                    <ProtectedRoute>
-                      <ProfilePage />
-                    </ProtectedRoute>
+                    <ProfilePage />
+                    // <ProtectedRoute>
+                    // </ProtectedRoute>
                   } 
                 />
               </Route>

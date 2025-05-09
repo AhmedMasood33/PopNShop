@@ -21,7 +21,24 @@ export const mockProducts: Product[] = [
     location: 'New York, NY',
     createdAt: '2023-09-15T10:30:00Z',
     features: ['M2 Chip', '16GB RAM', '512GB SSD', 'macOS Ventura']
+  },{
+    id: '1',
+    name: "Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops",
+    price: 109.95,
+    description: "Your perfect pack for everyday use and walks in the forest. Stash your laptop (up to 15 inches) in the padded sleeve, your everyday",
+    category: "men's clothing",
+    condition: 'new',
+    images:[ "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"],
+    "seller": {
+      id:"1",
+      name:"asfdsdf",
+      rating: 3.9
+      
   },
+    location: 'New York, NY',
+    createdAt: '2023-09-15T10:30:00Z',
+    features: ['M2 Chip', '16GB RAM', '512GB SSD', 'macOS Ventura']
+},
   {
     id: '2',
     name: 'Sony WH-1000XM4 Headphones',

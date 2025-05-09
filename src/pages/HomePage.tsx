@@ -4,6 +4,7 @@ import { ArrowRight, Zap, Shield, Star, TrendingUp } from 'lucide-react';
 import ProductCard from '../components/Products/ProductCard';
 import { mockProducts } from '../data/mockProducts';
 import CategoryCard from '../components/Products/CategoryCard';
+import { useEffect, useState } from "react";
 
 const categories = [
   { id: 'electronics', name: 'Electronics', icon: 'laptop', count: 243 },
@@ -15,6 +16,16 @@ const categories = [
 ];
 
 const HomePage: React.FC = () => {
+
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/hello")
+      .then((res) => res.text())
+      .then((data) => setMessage(data));
+      console.log(message);
+  }, []);
+
   return (
     <div className="bg-white">
       {/* Hero Section */}
@@ -36,7 +47,7 @@ const HomePage: React.FC = () => {
                 Start Shopping
               </Link>
               <Link 
-                to="/login" 
+                to="/sell" 
                 className="px-6 py-3 bg-white text-blue-600 font-semibold rounded-full hover:bg-blue-50 transition-colors"
               >
                 Sell an Item

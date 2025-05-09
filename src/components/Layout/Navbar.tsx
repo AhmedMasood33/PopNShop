@@ -4,6 +4,7 @@ import { ShoppingCart, Heart, User, Menu, X, Search, PlusCircle } from 'lucide-r
 import Logo from './Logo';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCart } from '../../contexts/CartContext';
+import { Package } from 'lucide-react'; // Add to your imports
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,6 +12,10 @@ const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const { cartItems } = useCart();
   const navigate = useNavigate();
+
+  const handleProfileClick = () => {
+    setIsMenuOpen(!isMenuOpen); // Toggle the menu visibility on click
+  };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +28,8 @@ const Navbar: React.FC = () => {
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+
 
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
@@ -59,6 +66,17 @@ const Navbar: React.FC = () => {
                 Sell
               </Link>
             )}
+          {/* Desktop Navigation Links */}
+          
+            {user && (
+                <Link
+                  to="/my-products"
+                  className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  <Package size={18} />
+                  My Products
+                </Link>
+            )}
             <Link 
               to="/cart" 
               className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors"
@@ -76,28 +94,62 @@ const Navbar: React.FC = () => {
             >
               <Heart size={20} />
             </Link>
-            {user ? (
-              <div className="relative group">
-                <button className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 transition-colors">
-                  <User size={20} />
-                  <span className="font-medium">{user.name}</span>
-                </button>
-                <div className="absolute right-0 w-48 mt-2 bg-white rounded-md shadow-lg overflow-hidden z-10 hidden group-hover:block">
-                  <Link 
-                    to="/profile" 
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+            {user ? 
+            // (
+            //   <div className="relative group">
+            //     <button onClick={handleProfile} className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 transition-colors">
+            //       <User size={20} />
+            //       <span className="font-medium">{user.name}</span>
+            //     </button>
+            //     <div className="absolute right-0 w-48 mt-2 bg-white rounded-md shadow-lg overflow-hidden z-10 hidden group-hover:block">
+            //       <Link 
+            //         to="/profile" 
+            //         className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+            //       >
+            //         Profile
+            //       </Link>
+            //       <button 
+            //         onClick={logout}
+            //         className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+            //       >
+            //         Logout
+            //       </button>
+            //     </div>
+            //   </div>
+            // )
+              (
+                <div className="relative">
+                  <button
+                    onClick={handleProfileClick}
+                    className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 transition-colors"
                   >
-                    Profile
-                  </Link>
-                  <button 
-                    onClick={logout}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
-                  >
-                    Logout
+                    <User size={20} />
+                    <span className="font-medium">{user.name}</span>
                   </button>
+                  {isMenuOpen && (
+                    <div className="absolute right-0 w-48 mt-2 bg-white rounded-md shadow-lg overflow-hidden z-10">
+                      <Link
+                        to="/profile"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                        onClick={() => setIsMenuOpen(false)} // Close menu after clicking
+                      >
+                        Profile
+                      </Link>
+                      <button
+                        onClick={() => {
+                          logout();
+                          setIsMenuOpen(false); // Close menu after logout
+                          navigate('/login')
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ) : (
+              ) 
+            : (
               <Link 
                 to="/login" 
                 className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"

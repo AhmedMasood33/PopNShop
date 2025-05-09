@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { Trash2, Plus, Minus, ArrowLeft, ShoppingCart, Loader2 } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { loadStripe } from '@stripe/stripe-js';
+import { Payment } from './../../node_modules/@stripe/stripe-js/types/api/orders.d';
 
 const stripePromise = loadStripe('your_publishable_key');
 
 const CartPage: React.FC = () => {
   const { cartItems, removeFromCart, updateQuantity, totalPrice, clearCart } = useCart();
   const [isProcessing, setIsProcessing] = useState(false);
+  const navigate = useNavigate();
 
   const formatPrice = (price: number): string => {
     return price.toLocaleString('en-US', {
@@ -32,8 +34,9 @@ const CartPage: React.FC = () => {
   const handleCheckout = async () => {
     setIsProcessing(true);
     try {
-      const stripe = await stripePromise;
-      if (!stripe) throw new Error('Stripe failed to load');
+      // const stripe = await stripePromise;
+      // if (!stripe) throw new Error('Stripe failed to load');
+      
 
       // In a real app, this would be an API call to your backend
       // const response = await fetch('/api/create-checkout-session', {
@@ -47,7 +50,9 @@ const CartPage: React.FC = () => {
       // For demo purposes, we'll just show a success message
       await new Promise(resolve => setTimeout(resolve, 2000));
       alert('Checkout successful! This is a demo, no actual payment was processed.');
-      clearCart();
+      navigate('/payment');
+
+      // clearCart();
     } catch (error) {
       console.error('Error during checkout:', error);
       alert('Something went wrong during checkout. Please try again.');
