@@ -34,7 +34,7 @@ function App() {
                 <Route path="register" element={<RegisterPage />} />
                 <Route path="cart" element={<CartPage />} />
                 <Route path="wishlist" element={<WishlistPage />} />
-                <Route path="my-products" element={<MyProductsPage />} />
+                <Route path="myproducts" element={<MyProductsPage />} />
                 <Route path="mybalance" element={<BalancePage />} />
                 <Route path="payment" element={<PaymentPage />} />
                 <Route 

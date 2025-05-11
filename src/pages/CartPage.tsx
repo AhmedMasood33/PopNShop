@@ -82,7 +82,8 @@ const CartPage: React.FC = () => {
 
     if (!response.ok) {
       const err = await response.json();
-      throw new Error(err.message || 'Failed to create listing');
+      alert(err.message);
+      return;
     }
 
     setIsProcessing(true);

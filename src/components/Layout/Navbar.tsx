@@ -77,7 +77,7 @@ const Navbar: React.FC = () => {
           
             {loggedInUser && (
                 <Link
-                  to="/my-products"
+                  to="/myproducts"
                   className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors"
                 >
                   <Package size={18} />
@@ -201,6 +201,16 @@ const Navbar: React.FC = () => {
                 <span>Sell an Item</span>
               </Link>
             )}
+            {user && (
+              <Link 
+                to="/sell" 
+                className="flex items-center space-x-2 py-2 text-gray-700"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <PlusCircle size={20} />
+                <span>Sell an Item</span>
+              </Link>
+            )}
             <Link 
               to="/cart" 
               className="flex items-center space-x-2 py-2 text-gray-700"
@@ -214,14 +224,14 @@ const Navbar: React.FC = () => {
                 </span>
               )}
             </Link>
-            <Link 
+            {/* <Link 
               to="/wishlist" 
               className="flex items-center space-x-2 py-2 text-gray-700"
               onClick={() => setIsMenuOpen(false)}
             >
               <Heart size={20} />
               <span>Wishlist</span>
-            </Link>
+            </Link> */}
             {user ? (
               <>
                 <Link 
