@@ -8,25 +8,57 @@ const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [formError, setFormError] = useState('');
-  const { login, error, isLoading } = useAuth();
+  const { error, isLoading } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const loginHandle = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError('');
-    
+
     if (!email || !password) {
       setFormError('Please enter both email and password');
       return;
     }
-    
+
     try {
-      await login(email, password);
+      const response = await fetch('http://localhost:8080/account/LogIn', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      console.log(response);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setFormError(errorData.message || 'Login failed');
+        return;
+      }
+      
+      const userData = await response.json();
+      console.log(userData);
+
+      if (userData.success==false) {
+        const errorData = await response.json();
+        setFormError(errorData.message || 'Login failed');
+        return;
+      }
+
+      // Save user data to local storage
+      localStorage.setItem('user', JSON.stringify(userData));
+
+      // Redirect after successful login
       navigate('/');
     } catch (error) {
-      // Error is already handled in the auth context
+      console.error('Login error:', error);
+      setFormError('An error password during login');
     }
   };
+
+
+
+  
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -50,7 +82,7 @@ const LoginPage: React.FC = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={loginHandle}>
             {(formError || error) && (
               <div className="rounded-md bg-red-50 p-4">
                 <div className="flex">
@@ -141,21 +173,6 @@ const LoginPage: React.FC = () => {
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Demo account</span>
-              </div>
-            </div>
-
-            <div className="mt-6 grid grid-cols-1 gap-3">
-              <div>
-                <p className="text-sm text-center text-gray-600">
-                  Use these credentials to try out the app:
-                </p>
-                <p className="text-sm text-center font-medium text-gray-800 mt-2">
-                  Email: demo@example.com<br />
-                  Password: password
-                </p>
               </div>
             </div>
           </div>

@@ -12,6 +12,7 @@ const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const { cartItems } = useCart();
   const navigate = useNavigate();
+  const loggedInUser = localStorage.getItem('user');
 
   const handleProfileClick = () => {
     setIsMenuOpen(!isMenuOpen); // Toggle the menu visibility on click
@@ -29,6 +30,12 @@ const Navbar: React.FC = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const logoutHandle = () => {
+    localStorage.removeItem('user')
+    navigate('/login')
+  }
+
+  
 
 
   return (
@@ -57,7 +64,7 @@ const Navbar: React.FC = () => {
 
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center space-x-4">
-            {user && (
+            {loggedInUser && (
               <Link 
                 to="/sell" 
                 className="flex items-center px-4 py-2 text-sm font-medium text-white bg-yellow-400 rounded-md hover:bg-yellow-500 transition-colors"
@@ -68,7 +75,7 @@ const Navbar: React.FC = () => {
             )}
           {/* Desktop Navigation Links */}
           
-            {user && (
+            {loggedInUser && (
                 <Link
                   to="/my-products"
                   className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors"
@@ -94,7 +101,7 @@ const Navbar: React.FC = () => {
             >
               <Heart size={20} />
             </Link>
-            {user ? 
+            {loggedInUser ? 
             // (
             //   <div className="relative group">
             //     <button onClick={handleProfile} className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 transition-colors">
@@ -124,7 +131,7 @@ const Navbar: React.FC = () => {
                     className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 transition-colors"
                   >
                     <User size={20} />
-                    <span className="font-medium">{user.name}</span>
+                    {/* <span className="font-medium">{loggedInUser.email}</span> */}
                   </button>
                   {isMenuOpen && (
                     <div className="absolute right-0 w-48 mt-2 bg-white rounded-md shadow-lg overflow-hidden z-10">
@@ -136,11 +143,7 @@ const Navbar: React.FC = () => {
                         Profile
                       </Link>
                       <button
-                        onClick={() => {
-                          logout();
-                          setIsMenuOpen(false); // Close menu after logout
-                          navigate('/login')
-                        }}
+                        onClick={logoutHandle}
                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
                       >
                         Logout

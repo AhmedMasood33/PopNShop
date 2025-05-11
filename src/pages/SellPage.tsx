@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, Plus, X, Loader2, AlertCircle, Eye } from 'lucide-react';
+import { Upload, X, Loader2, AlertCircle, Eye } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -26,12 +26,6 @@ const productSchema = z.object({
 
 type ProductFormData = z.infer<typeof productSchema>;
 
-const currencies = [
-  { code: 'USD', symbol: '$', name: 'US Dollar' },
-  { code: 'EUR', symbol: '€', name: 'Euro' },
-  { code: 'GBP', symbol: '£', name: 'British Pound' }
-];
-
 const categories = [
   { id: 'electronics', name: 'Electronics' },
   { id: 'furniture', name: 'Furniture' },
@@ -55,7 +49,6 @@ const SellPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [images, setImages] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
-  const [specifications, setSpecifications] = useState<{ key: string; value: string }[]>([]);
   const [showPreview, setShowPreview] = useState(false);
   const [imageErrors, setImageErrors] = useState<string[]>([]);
   const [draftSaved, setDraftSaved] = useState(false);
@@ -71,6 +64,9 @@ const SellPage: React.FC = () => {
   });
 
   const formValues = watch();
+
+  const LoggedInUser = localStorage.getItem('user');
+
 
   // Auto-save draft
   useEffect(() => {
@@ -137,15 +133,6 @@ const SellPage: React.FC = () => {
       return newUrls;
     });
   };
-
-  const addSpecification = () => {
-    setSpecifications([...specifications, { key: '', value: '' }]);
-  };
-
-  const removeSpecification = (index: number) => {
-    setSpecifications(specifications.filter((_, i) => i !== index));
-  };
-
   const onSubmit = async (data: ProductFormData) => {
     if (images.length === 0) {
       setImageErrors(['Please upload at least one image']);
@@ -154,18 +141,80 @@ const SellPage: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      // In a real app, this would be an API call to your backend
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // 1. Build the JSON payload for the "item" part
+      const itemObj = {
+        name: data.name,
+        description: data.description,
+        quantity: Number(data.quantity),
+        price: Number(data.price),
+        condition: data.condition,
+        category: data.category,
+        available: true,
+      };
+
+      // 2. Create FormData and append the two required parts
+      const formData = new FormData();
+      formData.append('item', JSON.stringify(itemObj));         // must be exactly "item"
+      formData.append('image', images[0]);                      // must be exactly "image"
+
+      // 3. Retrieve user ID
+      const raw = localStorage.getItem('user');
+
+      // 2. Parse it (fallback to an empty object if it's not there)
+      const user = raw ? JSON.parse(raw) as { accId?: number } : {};
+
+      // 3. Extract loginOwnerId (might be undefined) and coerce to string
+      const userIdStr = user.accId != null
+        ? String(user.accId)    // e.g. "4"
+        : '';                          // or handle missing ID however you like
+
+      // console.log(userIdStr);
+      if (!userIdStr) throw new Error('User ID missing');
+
+      // 4. Send multipart/form-data
+      const response = await fetch(`http://localhost:8080/items/${userIdStr}`, {
+        method: 'POST',
+        body: formData,    // browser sets the proper Content-Type with boundary
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.message || 'Failed to create listing');
+      }
+
+      // 5. Success
       localStorage.removeItem('productDraft');
       alert('Product listed successfully!');
-      navigate('/profile?tab=listings');
-    } catch (error) {
-      console.error('Error creating listing:', error);
-      alert('Failed to create listing. Please try again.');
+      navigate('/products');
+    } catch (err: any) {
+      console.error('Error creating listing:', err);
+      alert(`Failed to create listing: ${err.message}`);
     } finally {
       setIsSubmitting(false);
     }
   };
+  
+
+  // const onSubmit = async (data: ProductFormData) => {
+  //   if (images.length === 0) {
+  //     setImageErrors(['Please upload at least one image']);
+  //     return;
+  //   }
+
+  //   setIsSubmitting(true);
+  //   try {
+  //     // In a real app, this would be an API call to your backend
+  //     await new Promise(resolve => setTimeout(resolve, 2000));
+  //     localStorage.removeItem('productDraft');
+  //     alert('Product listed successfully!');
+  //     navigate('/profile?tab=listings');
+  //   } catch (error) {
+  //     console.error('Error creating listing:', error);
+  //     alert('Failed to create listing. Please try again.');
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
 
   const previewProduct = {
     id: 'preview',
@@ -247,23 +296,6 @@ const SellPage: React.FC = () => {
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900 mb-4">Pricing and Inventory</h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label htmlFor="currency" className="block text-sm font-medium text-gray-700">
-                        Currency <span className="text-red-500">*</span>
-                      </label>
-                      <select
-                        id="currency"
-                        {...register('currency')}
-                        className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        {currencies.map(currency => (
-                          <option key={currency.code} value={currency.code}>
-                            {currency.code} ({currency.symbol})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
                     <div>
                       <label htmlFor="price" className="block text-sm font-medium text-gray-700">
                         Price <span className="text-red-500">*</span>
@@ -411,57 +443,6 @@ const SellPage: React.FC = () => {
                   <p className="mt-2 text-sm text-gray-500">
                     Upload up to 5 images (JPG, PNG, or WebP, max 5MB each). First image will be the cover.
                   </p>
-                </div>
-
-                {/* Specifications */}
-                <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-lg font-semibold text-gray-900">Specifications</h2>
-                    <button
-                      type="button"
-                      onClick={addSpecification}
-                      className="text-sm text-blue-600 hover:text-blue-700 flex items-center"
-                    >
-                      <Plus size={16} className="mr-1" />
-                      Add Specification
-                    </button>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    {specifications.map((spec, index) => (
-                      <div key={index} className="flex gap-3">
-                        <input
-                          type="text"
-                          placeholder="Key"
-                          value={spec.key}
-                          onChange={(e) => {
-                            const newSpecs = [...specifications];
-                            newSpecs[index].key = e.target.value;
-                            setSpecifications(newSpecs);
-                          }}
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <input
-                          type="text"
-                          placeholder="Value"
-                          value={spec.value}
-                          onChange={(e) => {
-                            const newSpecs = [...specifications];
-                            newSpecs[index].value = e.target.value;
-                            setSpecifications(newSpecs);
-                          }}
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeSpecification(index)}
-                          className="p-2 text-gray-400 hover:text-red-500"
-                        >
-                          <X size={20} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
                 </div>
 
                 {/* Submit Button */}

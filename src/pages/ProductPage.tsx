@@ -290,49 +290,127 @@
 // export default ProductPage;
 
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const ProductPage = () => {
-  const [products, setProducts] = useState([]);
+interface ItemDTO {
+  itemId: number;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  available: boolean;
+  condition: string;
+  quantity: number;
+  imageName: string;
+  imageType: string;
+  imageData: string; // base64 string
+}
+
+const ProductPage: React.FC = () => {
+  const [products, setProducts] = useState<ItemDTO[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('https://fakestoreapi.com/products');
-        if (!response.ok) throw new Error('Failed to fetch products');
-        const data = await response.json();
+        const userId = localStorage.getItem('user');
+        if (!userId) throw new Error('Not logged in');
+
+        const res = await fetch(`http://localhost:8080/items`);
+        if (!res.ok) throw new Error(`Server responded ${res.status}`);
+        const data: ItemDTO[] = await res.json();
         setProducts(data);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
+      } catch (err: any) {
+        setError(err.message || 'Failed to load products');
+      } finally {
         setLoading(false);
       }
     };
+
     fetchProducts();
   }, []);
 
-  if (loading) return <div className="text-center">Loading...</div>;
-  if (error) return <div className="text-center text-red-500">Error: {error}</div>;
+  const handleAddToCart = async (itemId: number) => {
+    try {
+
+      const raw = localStorage.getItem('user');
+
+      // 2. Parse it (fallback to an empty object if it's not there)
+      const user = raw ? JSON.parse(raw) as { accId?: number } : {};
+
+      // 3. Extract loginOwnerId (might be undefined) and coerce to string
+      const userIdStr = user.accId != null
+        ? String(user.accId)    // e.g. "4"
+        : '';                
+        console.log(userIdStr);
+        console.log(itemId);
+      if (!userIdStr) throw new Error('Not logged in');
+
+      const response = await fetch(`http://localhost:8080/account/${userIdStr}/cart/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          item_id: itemId,
+          quantity: 1, // Default quantity of 1
+        }),
+      });
+
+      if (!response.ok) throw new Error(`Failed to add item to cart: ${response.statusText}`);
+
+      // Optionally, handle the response (e.g., show a success message)
+      alert('Item added to cart!');
+    } catch (err: any) {
+      alert(err.message || 'Error adding item to cart');
+    }
+  };
+
+
+
+  // if (loading) return <div className="text-center py-8">Loading your items…</div>;
+  // if (error) return <div className="text-center text-red-500 py-8">Error: {error}</div>;
+  // if (products.length === 0) return <div className="text-center py-8">No items found.</div>;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
-      {products.map((product) => (
-        <div key={product.id} className="border rounded-lg p-4 shadow hover:shadow-lg transition-shadow">
-          <img
-            src={product.image}
-            alt={product.title}
-            className="w-full h-48 object-contain mb-4"
-          />
-          <h3 className="text-lg font-semibold mb-2">{product.title}</h3>
-          <p className="text-gray-600 mb-2">${product.price}</p>
-          <button
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors"
-            onClick={() => alert(`Added ${product.title} to cart!`)} // Placeholder for cart functionality
-          >
-            Add to Cart
-          </button>
+      {products.map(item => (
+        <div
+          key={item.itemId}
+          className="bg-white rounded-lg p-4 shadow hover:shadow-lg transition-shadow flex flex-col"
+        >
+          <div className="h-48 bg-gray-100 flex items-center justify-center mb-4">
+            <img
+              src={`data:${item.imageType};base64,${item.imageData}`}
+              alt={item.name}
+              className="object-contain max-h-full"
+            />
+          </div>
+
+          <h3 className="text-lg font-semibold mb-1">{item.name}</h3>
+          <p className="text-sm text-gray-600 mb-2">
+            {item.category} • {item.condition}
+          </p>
+          <p className="font-bold text-xl mb-4">${item.price.toFixed(2)}</p>
+          <p className="text-sm text-gray-700 flex-grow">{item.description}</p>
+
+          <div className="mt-4 space-y-2">
+            <button
+              onClick={() => navigate(`/items/${item.itemId}`)}
+              className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+            >
+              View Details
+            </button>
+            <button
+              onClick={() => handleAddToCart(item.itemId)}
+              className="w-full py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-50 transition-colors"
+            >
+              Add to Cart
+            </button>
+          </div>
         </div>
       ))}
     </div>

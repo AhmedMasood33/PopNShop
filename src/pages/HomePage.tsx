@@ -4,7 +4,7 @@ import { ArrowRight, Zap, Shield, Star, TrendingUp } from 'lucide-react';
 import ProductCard from '../components/Products/ProductCard';
 import { mockProducts } from '../data/mockProducts';
 import CategoryCard from '../components/Products/CategoryCard';
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 
 const categories = [
   { id: 'electronics', name: 'Electronics', icon: 'laptop', count: 243 },
@@ -17,14 +17,8 @@ const categories = [
 
 const HomePage: React.FC = () => {
 
-  const [message, setMessage] = useState("");
+  // const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    fetch("http://localhost:8080/api/hello")
-      .then((res) => res.text())
-      .then((data) => setMessage(data));
-      console.log(message);
-  }, []);
 
   return (
     <div className="bg-white">
@@ -41,7 +35,7 @@ const HomePage: React.FC = () => {
             </p>
             <div className="flex flex-wrap gap-4">
               <Link 
-                to="/search" 
+                to="/products" 
                 className="px-6 py-3 bg-yellow-400 text-blue-950 font-semibold rounded-full hover:bg-yellow-300 transition-colors"
               >
                 Start Shopping
@@ -175,7 +169,7 @@ const HomePage: React.FC = () => {
             Turn your unused items into cash! Join thousands of students making extra money on PopNShop.
           </p>
           <Link 
-            to="/login" 
+            to="/sell" 
             className="inline-flex items-center px-6 py-3 bg-yellow-400 text-blue-950 font-semibold rounded-full hover:bg-yellow-300 transition-colors"
           >
             <TrendingUp size={20} className="mr-2" />

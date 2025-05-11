@@ -1,27 +1,4 @@
-// import React from 'react';
-// import ProductCard from '../components/Products/ProductCard';
-// import { mockProducts } from '../data/mockProducts';
 
-// const MyProductsPage: React.FC = () => {
-//     return (
-//         <div className="bg-white min-h-screen py-16">
-//             <div className="container mx-auto px-4">
-//                 <h1 className="text-3xl font-bold text-gray-900 mb-6 text-center">My Products</h1>
-//                 {mockProducts.length > 0 ? (
-//                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-//                         {mockProducts.map(product => (
-//                             <ProductCard key={product.id} product={product} />
-//                         ))}
-//                     </div>
-//                 ) : (
-//                     <p className="text-center text-gray-500 text-lg">No products available.</p>
-//                 )}
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default MyProductsPage;
 
 import React, { useState } from 'react';
 import { mockProducts as initialProducts } from '../data/mockProducts';
@@ -43,6 +20,8 @@ const MyProductsPage: React.FC = () => {
     };
 
     return (
+        <>
+        <h1>Helloooooooo</h1>
         <div className="bg-white min-h-screen py-16">
             <div className="container mx-auto px-4">
                 <h1 className="text-3xl font-bold text-gray-900 mb-6 text-center">My Dashboard</h1>
@@ -50,11 +29,11 @@ const MyProductsPage: React.FC = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {products.map(product => (
                             <DashboardProductCard
-                                key={product.id}
-                                product={product}
-                                onRemove={handleRemove}
-                                onMarkSold={handleMarkSold}
-                                onEdit={handleEdit}
+                            key={product.id}
+                            product={product}
+                            onRemove={handleRemove}
+                            onMarkSold={handleMarkSold}
+                            onEdit={handleEdit}
                             />
                         ))}
                     </div>
@@ -63,6 +42,7 @@ const MyProductsPage: React.FC = () => {
                 )}
             </div>
         </div>
+                </>
     );
 };
 

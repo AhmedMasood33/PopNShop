@@ -13,32 +13,43 @@ const RegisterPage: React.FC = () => {
   const { register, error, isLoading } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormError('');
-    
-    if (!name || !email || !password || !confirmPassword) {
-      setFormError('Please fill out all fields');
-      return;
-    }
-    
-    if (password !== confirmPassword) {
-      setFormError('Passwords do not match');
-      return;
-    }
-    
-    if (password.length < 6) {
-      setFormError('Password must be at least 6 characters');
-      return;
-    }
-    
-    try {
-      await register(name, email, password);
-      navigate('/');
-    } catch (error) {
-      // Error is already handled in the auth context
-    }
-  };
+   const signUpHandle = async (e: React.FormEvent) => {
+     e.preventDefault();
+     setFormError('');
+ 
+     if (!email || !password) {
+       setFormError('Please enter both email and password');
+       return;
+     }
+ 
+     try {
+       const response = await fetch('http://localhost:8080/account/SignUp', {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({ name, email, password }),
+       });
+ 
+       if (!response.ok) {
+         const errorData = await response.json();
+         setFormError(errorData.message || 'SignUp failed');
+         return;
+       }
+ 
+       const userData = await response.json();
+       console.log(userData);
+ 
+       // Save user data to local storage
+       localStorage.setItem('user', JSON.stringify(userData));
+ 
+       // Redirect after successful SignUp
+       navigate('/');
+     } catch (error) {
+       console.error('SignUp error:', error);
+       setFormError('An error occurred during SignUp');
+     }
+   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -62,7 +73,7 @@ const RegisterPage: React.FC = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={signUpHandle}>
             {(formError || error) && (
               <div className="rounded-md bg-red-50 p-4">
                 <div className="flex">

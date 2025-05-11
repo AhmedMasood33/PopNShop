@@ -13,8 +13,8 @@ import SellPage from './pages/SellPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
 import { WishlistProvider } from './contexts/WishlistContext';
-import ProtectedRoute from './components/Auth/ProtectedRoute';
 import MyProductsPage from './pages/MyProductsPage';
+import BalancePage from './pages/BalancePage';
 import PaymentPage from './pages/PaymentPage';
 
 
@@ -28,29 +28,22 @@ function App() {
             <Routes>
               <Route path="/" element={<Layout />}>
                 <Route index element={<HomePage />} />
-                <Route path="product/:id" element={<ProductPage />} />
+                <Route path="products" element={<ProductPage />} />
                 <Route path="search" element={<SearchPage />} />
                 <Route path="login" element={<LoginPage />} />
                 <Route path="register" element={<RegisterPage />} />
                 <Route path="cart" element={<CartPage />} />
                 <Route path="wishlist" element={<WishlistPage />} />
                 <Route path="my-products" element={<MyProductsPage />} />
+                <Route path="mybalance" element={<BalancePage />} />
                 <Route path="payment" element={<PaymentPage />} />
                 <Route 
                   path="sell" 
-                  element={
-                    <ProtectedRoute>
-                      <SellPage />
-                    </ProtectedRoute>
-                  } 
+                  element={<SellPage />} 
                 />
                 <Route 
                   path="profile" 
-                  element={
-                    <ProfilePage />
-                    // <ProtectedRoute>
-                    // </ProtectedRoute>
-                  } 
+                  element={<ProfilePage />} 
                 />
               </Route>
             </Routes>

@@ -3,16 +3,17 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 
 const PaymentPage: React.FC = () => {
-    const { cartItems, totalPrice, clearCart } = useCart();
+    const { cartItems, clearCart } = useCart();
     const [paymentMethod, setPaymentMethod] = useState<'card' | 'cod'>('card');
     const [address, setAddress] = useState('');
     const [phone, setPhone] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
 
-    const tax = totalPrice * 0.14;
-    const codFee = paymentMethod === 'cod' ? 5 : 0;
-    const grandTotal = totalPrice + tax + codFee;
+    const totalPriceString: string | null = localStorage.getItem('totalPrice');
+    const totalPrice = Number(totalPriceString); // convert string to number
+    const codFee = paymentMethod === 'cod' ? 20 : 0;
+    const finalTotal = totalPrice + codFee;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -47,19 +48,17 @@ const PaymentPage: React.FC = () => {
                             <span>Subtotal</span>
                             <span>${totalPrice.toFixed(2)}</span>
                         </div>
-                        <div className="flex justify-between">
-                            <span>Tax (14%)</span>
-                            <span>${tax.toFixed(2)}</span>
-                        </div>
+
                         {paymentMethod === 'cod' && (
                             <div className="flex justify-between">
                                 <span>Cash on Delivery Fee</span>
                                 <span>${codFee.toFixed(2)}</span>
                             </div>
                         )}
+
                         <div className="flex justify-between font-bold text-gray-900 border-t pt-2">
                             <span>Total</span>
-                            <span>${grandTotal.toFixed(2)}</span>
+                            <span>${finalTotal.toFixed(2)}</span>
                         </div>
                     </div>
                 </div>
