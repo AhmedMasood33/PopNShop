@@ -95,12 +95,12 @@ const Navbar: React.FC = () => {
                 </span>
               )}
             </Link>
-            <Link 
+            {/* <Link 
               to="/wishlist" 
               className="p-2 text-gray-700 hover:text-blue-600 transition-colors"
             >
               <Heart size={20} />
-            </Link>
+            </Link> */}
             {loggedInUser ? 
             // (
             //   <div className="relative group">

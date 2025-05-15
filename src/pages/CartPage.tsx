@@ -89,7 +89,7 @@ const CartPage: React.FC = () => {
     setIsProcessing(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 2000));
-      alert('Checkout successful! This is a demo, no actual payment was processed.');
+      // alert('Checkout successful! This is a demo, no actual payment was processed.');
       navigate('/payment');
     } catch (error) {
       console.error('Error during checkout:', error);
@@ -278,11 +278,11 @@ const CartPage: React.FC = () => {
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Tax</span>
-                  <span>{formatPrice(totalPrice * 0.1)}</span>
+                  <span>{formatPrice(0)}</span>
                 </div>
                 <div className="border-t border-gray-200 pt-3 flex justify-between font-bold text-gray-900">
                   <span>Total</span>
-                  <span>{formatPrice(totalPrice * 1.1)}</span>
+                  <span>{formatPrice(totalPrice * 1)}</span>
                 </div>
               </div>
 

@@ -96,7 +96,7 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Featured Products */}
+      {/* Featured Products
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-12">
@@ -115,7 +115,7 @@ const HomePage: React.FC = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Features Section */}
       <section className="py-20">

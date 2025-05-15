@@ -84,7 +84,7 @@ const PaymentPage: React.FC = () => {
                     />
                 </div>
 
-                {/* Payment Method */}
+                {/* Payment Method
                 <div className="border rounded-lg p-6 shadow-sm">
                     <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
                     <div className="flex gap-6">
@@ -107,7 +107,7 @@ const PaymentPage: React.FC = () => {
                             Cash on Delivery (+EGP20)
                         </label>
                     </div>
-                </div>
+                </div> */}
 
                 <button
                     type="submit"
